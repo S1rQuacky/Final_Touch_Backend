@@ -4,7 +4,7 @@
 // get .env variables
 require("dotenv").config();
 // pull PORT from .env, give default value of 3000
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, URL_MONGODB } = process.env;
 // import express
 const express = require("express");
 // create application object
@@ -19,7 +19,7 @@ const morgan = require("morgan");
 ///////////////////////////////
 // DATABASE CONNECTION
 ////////////////////////////////
-// Establish Connection
+// Establish Connection 
 mongoose.connect(URL_MONGODB, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
@@ -36,6 +36,7 @@ mongoose.connect(URL_MONGODB, {
 const MakeUpsSchema = new mongoose.Schema({
     brand: String,
     name: String,
+    quantity: Number,
     price: Number,
     imagen_link: String,
     description: String,
@@ -44,7 +45,7 @@ const MakeUpsSchema = new mongoose.Schema({
 
   });
   
-  const Makeups = mongoose.model("Makeups", MakeupsSchema);
+  const MakeUps = mongoose.model("Makeups", MakeUpsSchema);
   
   ///////////////////////////////
   // MiddleWare
@@ -57,31 +58,53 @@ const MakeUpsSchema = new mongoose.Schema({
 // ROUTES
 ////////////////////////////////
 // create a test route
-app.get("/", (req, res) => {
-    res.send("Is time to shine");
-  });
+    app.get("/", (req, res) => {
+        res.send("Is time to shine");
+    });
 
-  //  INDEX ROUTE
-app.get("/makeups", async (req, res) => {
+//  INDEX ROUTE
+    app.get("/cart", async (req, res) => {
+        try {
+        // send all cart
+        res.json(await MakeUps.find({}));
+        } catch (error) {
+        //send error
+        res.status(400).json({error});
+        }
+    });
+// CREATE ROUTE
+app.post("/cart", async (req, res) => {
     try {
-      // send all makeups
-      res.json(await Makeups.find({}));
+      // send all people
+      res.json(await MakeUps.create(req.body));
     } catch (error) {
       //send error
       res.status(400).json(error);
     }
   });
+// UPDATE ROUTE
+    app.put("/cart/:id", async (req, res) => {
+        try {
+        // send all cart
+        res.json(
+            await MakeUps.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        );
+        } catch (error) {
+        //send error
+        res.status(400).json({error});
+        }
+    });
+// DELETE ROUTE
+    app.delete("/cart/:id", async (req, res) => {
+        try {
+        // send all cart
+        res.json(await MakeUps.findByIdAndRemove(req.params.id));
+        } catch (error) {
+        //send error
+        res.status(400).json({error});
+        }
+    });
 
-  // CREATE ROUTE
-app.post("/makeups", async (req, res) => {
-    try {
-      // send all makeups
-      res.json(await Makeups.create(req.body));
-    } catch (error) {
-      //send error
-      res.status(400).json(error);
-    }
-  });
   ///////////////////////////////
   // LISTENER
   ////////////////////////////////
