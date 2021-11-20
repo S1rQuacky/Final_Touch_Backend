@@ -30,14 +30,47 @@ mongoose.connect(URL_MONGODB, {
     .on("close", () => console.log("Your are disconnected from mongoose"))
     .on("error", (error) => console.log(error));
 
+    ///////////////////////////////
+// MODELS
+////////////////////////////////
+const MakeUpsSchema = new mongoose.Schema({
+    brand: String,
+    name: String,
+    price: Number,
+    imagen_link: String,
+    description: String,
+    product_type: String,
+    tag_list: [String],
+
+  });
+  
+  const Makeups = mongoose.model("Makeups", MakeupsSchema);
+  
+  ///////////////////////////////
+  // MiddleWare
+  ////////////////////////////////
+  app.use(cors()); // to prevent cors errors, open access to all origins
+  app.use(morgan("dev")); // logging
+  app.use(express.json()); // parse json bodies
+
 ///////////////////////////////
 // ROUTES
 ////////////////////////////////
 // create a test route
 app.get("/", (req, res) => {
-    res.send("Hello World");
+    res.send("Is time to shine");
   });
-  
+
+  //  INDEX ROUTE
+app.get("/makeups", async (req, res) => {
+    try {
+      // send all makeups
+      res.json(await Makeups.find({}));
+    } catch (error) {
+      //send error
+      res.status(400).json(error);
+    }
+  });
   ///////////////////////////////
   // LISTENER
   ////////////////////////////////
