@@ -40,7 +40,7 @@ const MakeUpsSchema = new mongoose.Schema({
     imagen_link: String,
     description: String,
     product_type: String,
-    tag_list: [String],
+    tag_list: Array,
 
   });
   
@@ -66,6 +66,17 @@ app.get("/makeups", async (req, res) => {
     try {
       // send all makeups
       res.json(await Makeups.find({}));
+    } catch (error) {
+      //send error
+      res.status(400).json(error);
+    }
+  });
+
+  // CREATE ROUTE
+app.post("/makeups", async (req, res) => {
+    try {
+      // send all makeups
+      res.json(await Makeups.create(req.body));
     } catch (error) {
       //send error
       res.status(400).json(error);
