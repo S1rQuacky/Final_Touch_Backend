@@ -38,7 +38,7 @@ const MakeUpsSchema = new mongoose.Schema({
     name: String,
     quantity: Number,
     price: Number,
-    imagen_link: String,
+    image_link: String,
     description: String,
     product_type: String,
     tag_list: Array,
